@@ -1,4 +1,6 @@
 #pragma once
+
+#include <memory>
 #include <string>
 
 struct OpNode
@@ -7,7 +9,7 @@ struct OpNode
 	std::shared_ptr<OpNode> right;
 
 	virtual std::string to_string() { return "[NO]"; };
-	virtual uint32_t compute(uint32_t a, uint32_t b) { return -1; };
+	virtual uint64_t compute(uint64_t a, uint64_t b) { return -1; };
 	virtual ~OpNode() = default;
 };
 
@@ -18,8 +20,8 @@ struct BinopNode : public OpNode
 		AND,
 		OR,
 		XOR,
-		BINOP_MAX,
 		ADD,
+		BINOP_MAX,
 		MUL,
 	};
 
@@ -28,12 +30,12 @@ struct BinopNode : public OpNode
 	{
 		std::string op;
 		switch (type) {
-		//case ADD:
-		//	op = "ADD";
-		//	break;
-		//case MUL:
-		//	op = "MUL";
-		//	break;
+		case ADD:
+			op = "+";
+			break;
+		case MUL:
+			op = "*";
+			break;
 		case AND:
 			op = "&";
 			break;
@@ -52,15 +54,15 @@ struct BinopNode : public OpNode
 		return "(" + left->to_string() + " "  + op + " " + right->to_string() + ")";
 	}
 
-	uint32_t compute(uint32_t a, uint32_t b) override
+	uint64_t compute(uint64_t a, uint64_t b) override
 	{
-		uint32_t l = left->compute(a, b);
-		uint32_t r = right->compute(a, b);
+		uint64_t l = left->compute(a, b);
+		uint64_t r = right->compute(a, b);
 		switch (type) {
-		//case ADD:
-		//	return l + r;
-		//case MUL:
-		//	return l * r;
+		case ADD:
+			return l + r;
+		case MUL:
+			return l * r;
 		case AND:
 			return l & r;
 		case OR:
@@ -103,12 +105,12 @@ struct UnopNode : public OpNode
 		return op + right->to_string();
 	}
 
-	uint32_t compute(uint32_t a, uint32_t b) override
+	uint64_t compute(uint64_t a, uint64_t b) override
 	{
-		uint32_t r = right->compute(a, b);
+		uint64_t r = right->compute(a, b);
 		switch (type) {
 		case MINUS:
-			return static_cast<uint32_t>(-static_cast<int32_t>(r));
+			return static_cast<uint64_t>(-static_cast<int32_t>(r));
 		case NOT:
 			return ~r;
 		default:
@@ -125,7 +127,7 @@ struct VarNode : public OpNode
 		return isA ? "a" : "b";
 	}
 
-	uint32_t compute(uint32_t a, uint32_t b) override
+	uint64_t compute(uint64_t a, uint64_t b) override
 	{
 		return isA ? a : b;
 	}
@@ -135,13 +137,13 @@ struct VarNode : public OpNode
 
 struct ConstantNode : public OpNode
 {
-	uint32_t constant = 1; // __rdtsc() % static_cast<uint32_t>(-1);
+	uint64_t constant = 1;// __rdtsc() % static_cast<uint64_t>(-1);
 	std::string to_string() override
 	{
-		return std::to_string(constant);
+		return std::to_string(constant) + "UL";
 	}
 
-	uint32_t compute(uint32_t a, uint32_t b) override
+	uint64_t compute(uint64_t a, uint64_t b) override
 	{
 		return constant;
 	}
