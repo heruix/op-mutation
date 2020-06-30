@@ -14,3 +14,6 @@ where a1, a2, a3, ... correspond to the values in the solution vector, c1, c2, c
 
 # boring, show me something funny
 how about a [4.5 megabyte addition](examples/add)
+
+# additional information
+due to recent improvements in how https://github.com/vtil-project/VTIL-Core handles arithmetic expressions in multiplication, this mutation generator is almost completely broken by it :) 
